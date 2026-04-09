@@ -110,7 +110,7 @@ export default function SimriPage() {
 
             <div className="w-full aspect-video bg-gray-100 rounded-2xl mb-6 overflow-hidden border border-black/5 shadow-inner">
               <img 
-                src={`/images/latin/${currentIdx + 1}.png`} 
+                src={`/images/latin/${currentIdx + 1}.webp`} 
                 alt="quiz"
                 className="w-full h-full object-cover"
                 onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/400x225?text=AMOR+KOREA"; }}

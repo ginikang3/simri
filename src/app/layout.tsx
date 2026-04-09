@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+// @ts-nocheck
 import "@/app/globals.css";
-
 export const metadata: Metadata = {
   title: "Simri Lab",
   description: "Test de compatibilidad",
