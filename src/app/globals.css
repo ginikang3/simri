@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --vh: 1vh;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  /* 기본 배경은 완전 흰색 */
+  background-color: #ffffff; 
+  color: #333;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease; /* 배경 전환 효과 */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.mobile-min-h {
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* --- 테마별 배경색 --- */
+
+/* 라틴/한국남친 테스트 진입 시 핑크 배경 */
+body:has(.latin-theme) {
+  background-color: #FFF0F5; /* LavenderBlush: 아주 연한 핑크 */
+}
+
+/* 능지 테스트 등 다른 테마 배경 (선택사항) */
+body:has(.iq-theme) {
+  background-color: #F8FAFC; 
 }
