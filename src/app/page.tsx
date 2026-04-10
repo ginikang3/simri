@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import { useMobileHeight } from "@/hooks/useMobileHeight";
-import { latin } from "@/data/tests/latin";
-
-const tests = { latin };
+import { tests } from "@/data/tests"; 
 
 export default function SimriPage() {
   useMobileHeight();
@@ -21,18 +19,9 @@ export default function SimriPage() {
     primaryTextColor: "text-gray-900"
   };
 
-  // 홈으로 완전히 초기화하는 함수
   const goHome = () => {
     setStep("home");
     setCurrentTestKey(null);
-    setCurrentIdx(0);
-    setTotalScore(0);
-    window.scrollTo(0, 0);
-  };
-
-  const handleStart = (key: keyof typeof tests) => {
-    setCurrentTestKey(key);
-    setStep("quiz");
     setCurrentIdx(0);
     setTotalScore(0);
     window.scrollTo(0, 0);
@@ -54,19 +43,20 @@ export default function SimriPage() {
     ? tests[currentTestKey].results.find(r => totalScore >= r.min && totalScore <= r.max) || tests[currentTestKey].results[0]
     : null;
 
+  // 💡 쫀득한 애니메이션 클래스 정의
+  const expensiveAnimation = "animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out fill-mode-forwards";
+
   return (
     <main className={`mobile-min-h flex flex-col items-center justify-start px-6 pt-6 pb-6 transition-all duration-500 ${currentTheme.id}`}>
       <div className="w-full max-w-sm flex flex-col items-center">
         
-        {/* 상단 로고 이미지 (클릭 시 홈으로 이동) */}
         <header className="w-full flex justify-center mb-8 pt-4">
-          <button onPointerDown={goHome} className="active:scale-95 transition-transform touch-none">
+          <button onPointerDown={goHome} className="active:scale-90 transition-transform duration-150 touch-none">
             <img 
               src="/images/logo.png" 
               alt="SIMRI LOGO" 
               className="h-12 w-auto object-contain"
               onError={(e) => {
-                // 이미지가 없을 경우를 대비한 텍스트 대체 로직
                 e.currentTarget.style.display = 'none';
                 const parent = e.currentTarget.parentElement;
                 if (parent) parent.innerHTML = '<h1 class="text-4xl font-black tracking-tighter text-gray-900">SIMRI</h1>';
@@ -75,93 +65,111 @@ export default function SimriPage() {
           </button>
         </header>
 
+        {/* 1. 홈 섹션 */}
         {step === "home" && (
-          <div className="w-full space-y-12 animate-in fade-in duration-700">
+          <div key="home" className={`w-full space-y-12 ${expensiveAnimation}`}>
             <section className="space-y-4">
               <div className="flex items-center gap-3">
-                <h2 className="text-xs font-black text-gray-300 uppercase tracking-widest">Available Tests</h2>
+                <h2 className="text-xs font-black text-gray-300 uppercase tracking-widest px-1">Available Tests</h2>
                 <div className="flex-1 h-[1px] bg-gray-100"></div>
               </div>
-              <button
-                onPointerDown={() => {
-  setCurrentTestKey('latin');
-  setStep("intro");
-  window.scrollTo(0, 0);
-}}
-                className="w-full p-6 bg-white border border-gray-100 rounded-3xl text-left shadow-sm active:scale-[0.97] transition-all flex justify-between items-center group touch-none"
-              >
-                <div>
-                  <span className="text-lg font-bold text-gray-800">{tests.latin.title}</span>
-                  <p className="text-[10px] text-pink-400 font-bold mt-1">START TEST →</p>
-                </div>
-              </button>
+              <div className="grid gap-4">
+                {Object.keys(tests).map((key) => (
+                  <button
+                    key={key}
+                    onPointerDown={() => {
+                      setCurrentTestKey(key as keyof typeof tests);
+                      setStep("intro");
+                      window.scrollTo(0, 0);
+                    }}
+                    className="w-full p-6 bg-white border border-gray-100 rounded-3xl text-left shadow-sm active:scale-[0.97] transition-all duration-200 flex justify-between items-center group touch-none"
+                  >
+                    <div>
+                      <span className="text-lg font-bold text-gray-800">{tests[key as keyof typeof tests].title}</span>
+                      <p className="text-[11px] text-pink-400 font-bold mt-1.5 opacity-80 group-active:opacity-100 transition-opacity uppercase">START TEST →</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </section>
           </div>
         )}
- {/* 💡 이 위치에 삽입하세요: step === "home" 섹션 바로 아래 */}
-{step === "intro" && currentTestKey && (
-  <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-    <div className="w-full aspect-video bg-gray-100 rounded-[2rem] mb-6 overflow-hidden shadow-lg border border-black/5">
-      <img 
-        src="/images/latin/intro.webp" 
-        alt="Intro" 
-        className="w-full h-full object-cover" 
-        onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/800x450?text=K-Love+Test"; }}
-      />
-    </div>
-    
-    <h1 className="text-2xl font-black text-gray-900 mb-4 text-center break-keep">
-      ¿Eres compatible con el amor de Corea?
-    </h1>
-    
-    <div className="bg-white/80 p-6 rounded-2xl border border-gray-100 mb-8 text-gray-600 text-[15px] leading-relaxed shadow-sm">
-    
-      <p className="font-medium text-gray-800">
-        ¿Te gustaría tener un novio coreano? 🇰🇷 <br/>
-    ¿Podrás superar las diferencias culturales y lograr una relación exitosa? <br/>
-    ¡Descúbrelo ahora mismo con este test!
-      </p>
-    </div>
 
-    <button
-      onPointerDown={() => {
-        setStep("quiz");
-        window.scrollTo(0, 0);
-      }}
-      className="w-full py-5 bg-[#FF69B4] text-white rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform touch-none"
-    >
-      ¡Empezar ahora!
-    </button>
+        {/* 2. 인트로 섹션 */}
+        {step === "intro" && currentTestKey && (
+          <div key={`intro-${currentTestKey}`} className={`w-full flex flex-col items-center ${expensiveAnimation}`}>
+            <div className="w-full aspect-video bg-gray-100 rounded-[2rem] mb-6 overflow-hidden shadow-lg border border-black/5">
+              <img 
+                src={`/images/${currentTestKey}/intro.webp`} 
+                alt="Intro" 
+                className="w-full h-full object-cover" 
+                onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/800x450?text=Intro"; }}
+              />
+            </div>
+            
+            <h1 className="text-2xl font-black text-gray-900 mb-4 text-center break-keep leading-tight px-2">
+              {tests[currentTestKey].title}
+            </h1>
+            
+            <div className="bg-white p-7 rounded-[1.5rem] border border-gray-100 mb-8 text-gray-700 text-[15px] shadow-sm text-center font-semibold text-gray-800 break-keep leading-relaxed">
+              {currentTestKey === 'latin' ? (
+                <>¿Te gustaría tener un novio coreano? 🇰🇷 <br/>¿Podrás superar las diferencias culturales? <br/>¡Descúbrelo ahora!</>
+              ) : (
+                <>Pon a prueba tu conocimiento general. <br/>¿Qué tan inteligente eres realmente? <br/>¡Empieza el desafío!</>
+              )}
+            </div>
+
+            <button
+              onPointerDown={() => { setStep("quiz"); window.scrollTo(0, 0); }}
+              className="w-full py-5 bg-[#FF69B4] text-white rounded-[1.25rem] font-black text-lg shadow-lg active:scale-95 transition-all duration-200 touch-none"
+            >
+              ¡Empezar ahora!
+            </button>
+            {/* 인트로 버튼 아래에 슬쩍 추가 */}
+<div className="mt-12 text-left space-y-4 border-t border-gray-100 pt-8 opacity-60">
+  <h3 className="text-sm font-black text-gray-400">Preguntas Frecuentes</h3>
+  <div className="text-[11px] text-gray-400 space-y-3 leading-relaxed">
+    <p><strong>¿Es precisa esta prueba?</strong><br/> Nuestras pruebas están diseñadas por expertos en contenido cultural para ofrecer una experiencia entretenida y reflexiva basada en tendencias actuales.</p>
+    <p><strong>¿Mis datos están seguros?</strong><br/> En SIMRI LAB respetamos tu privacidad. No almacenamos información personal identificable durante el proceso del test.</p>
+    <p><strong>¿Puedo compartir mis resultados?</strong><br/> ¡Claro! Al finalizar, recibirás un análisis detallado que puedes compartir directamente en WhatsApp o Instagram.</p>
   </div>
-)}
+</div>
+          </div>
+        )}
+
+        {/* 3. 퀴즈 섹션 (💡 key={currentIdx} 추가: 문제마다 애니메이션 재생) */}
         {step === "quiz" && currentTestKey && (
-          <div className="w-full flex flex-col items-center animate-in slide-in-from-bottom-4 duration-500">
-            <div className="w-full bg-black/5 h-1.5 rounded-full mb-5 overflow-hidden">
+          <div key={`quiz-${currentIdx}`} className={`w-full flex flex-col items-center ${expensiveAnimation}`}>
+            <div className="w-full bg-black/5 h-1.5 rounded-full mb-6 overflow-hidden">
               <div 
-                className={`${currentTheme.primaryColor} h-full transition-all duration-500`} 
+                className={`${currentTheme.primaryColor} h-full transition-all duration-500 ease-in-out`} 
                 style={{ width: `${((currentIdx + 1) / tests[currentTestKey].questions.length) * 100}%` }}
               />
             </div>
             
-            <h2 className="text-xl font-bold mb-4 text-center break-keep leading-snug text-gray-800 min-h-[48px] px-1">
+            <h2 className="text-xl font-bold mb-6 text-center break-keep leading-snug text-gray-800 min-h-[48px] px-2 flex items-center justify-center">
               {tests[currentTestKey].questions[currentIdx].text}
             </h2>
 
-            <div className="w-full aspect-video bg-gray-100 rounded-2xl mb-6 overflow-hidden border border-black/5 shadow-inner">
-              <img 
-                src={`/images/latin/${currentIdx + 1}.webp`} 
-                alt="quiz"
-                className="w-full h-full object-cover"
-                onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/400x225?text=AMOR+KOREA"; }}
-              />
-            </div>
+            {tests[currentTestKey].useImage ? (
+              <div className="w-full aspect-video bg-gray-100 rounded-2xl mb-7 overflow-hidden border border-black/5 shadow-inner">
+                <img 
+                  src={`/images/${currentTestKey}/${currentIdx + 1}.webp`} 
+                  alt="quiz"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/400x225?text=QUIZ"; }}
+                />
+              </div>
+            ) : (
+              <div className="mb-4" /> 
+            )}
 
-            <div className="flex flex-col gap-2.5 w-full">
+            <div className="flex flex-col gap-3 w-full">
               {tests[currentTestKey].questions[currentIdx].options.map((opt, i) => (
                 <button
                   key={i}
                   onPointerDown={() => handleAnswer(opt.score)}
-                  className="w-full py-3.5 px-5 bg-white border border-gray-100 rounded-xl font-semibold text-center shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all text-gray-700 text-sm leading-tight touch-none"
+                  className="w-full py-4 px-6 bg-white border border-gray-100 rounded-xl font-semibold text-center shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all duration-200 text-gray-700 text-[14px] leading-tight touch-none"
                 >
                   {opt.text}
                 </button>
@@ -170,61 +178,66 @@ export default function SimriPage() {
           </div>
         )}
 
-        {step === "result" && resultData && (
-  <div className="w-full text-center flex flex-col items-center animate-in zoom-in-95 duration-500 pt-2">
-    {/* 결과 타이틀 */}
-    <h2 className="text-3xl font-black text-[#FF69B4] mb-8 leading-tight px-4">{resultData.title}</h2>
-    
-    {/* 결과 이미지 (latin/results 폴더에 넣은 이미지 호출) */}
-    <div className="w-64 h-64 bg-white rounded-[3rem] shadow-2xl mb-8 overflow-hidden border-8 border-white">
-      <img 
-        src={`/images/latin/results/result-${totalScore > 8 ? 'high' : totalScore > 4 ? 'mid' : 'low'}.webp`} 
-        alt="result"
-        className="w-full h-full object-cover"
-        onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/300?text=AMOR+KOREA"; }}
-      />
-    </div>
+        {/* 4. 결과 섹션 */}
+        {step === "result" && resultData && currentTestKey && (
+          <div key="result" className={`w-full text-center flex flex-col items-center pt-2 ${expensiveAnimation}`}>
+            <h2 className="text-3xl font-black text-[#FF69B4] mb-9 leading-tight px-4 break-keep">{resultData.title}</h2>
+            
+            <div className="w-52 h-52 bg-white rounded-[3rem] shadow-2xl mb-7 overflow-hidden border-8 border-white mx-auto">
+  <img 
+    src={`/images/${currentTestKey}/results/${tests[currentTestKey].results.findIndex(r => r.title === resultData.title)}.webp`}
+    alt={resultData.title}
+    className="w-full h-full object-contain"
+    onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
+  />
+</div>
 
-    {/* 점수 게이지 바 (애드센스 승인용 전문성 추가) */}
-    <div className="w-full bg-gray-100 h-8 rounded-2xl mb-8 relative overflow-hidden shadow-inner border border-black/5">
-      <div 
-        className="absolute left-0 top-0 h-full bg-gradient-to-r from-pink-300 to-pink-500 transition-all duration-1000"
-        style={{ width: `${(totalScore / 9) * 100}%` }} 
-      />
-      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white drop-shadow-sm">
-        COMPATIBILIDAD: {Math.floor((totalScore / 9) * 100)}%
-      </span>
-    </div>
+            <div className="w-full bg-gray-100 h-9 rounded-full mb-7 relative overflow-hidden shadow-inner border border-black/5">
+              <div 
+                className="absolute left-0 top-0 h-full bg-gradient-to-r from-pink-300 to-pink-500 transition-all duration-1000 ease-out"
+                style={{ width: `${(totalScore / tests[currentTestKey].questions.length) * 100}%` }} 
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-black text-white drop-shadow-sm uppercase tracking-wider">
+                COMPATIBILIDAD: {Math.floor((totalScore / tests[currentTestKey].questions.length) * 100)}%
+              </span>
+            </div>
 
-    {/* 결과 설명 */}
-    <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-xl border border-white mb-10 w-full">
-      <p className="text-gray-600 leading-relaxed break-keep text-base font-medium">{resultData.description}</p>
-    </div>
+            <div className="bg-white p-7 rounded-[2rem] shadow-xl border border-white mb-7 w-full break-keep font-semibold text-gray-600 leading-relaxed text-base">
+              {resultData.description}
+            </div>
 
-    {/* 액션 버튼들 (와츠앱 공유 추가) */}
-    <div className="flex flex-col gap-3 w-full">
-      <button
-        onPointerDown={() => {
-          const text = `¡Mira mi resultado! Soy: ${resultData.title}. ¿Y tú?`;
-          window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`);
-        }}
-        className="w-full py-4 bg-[#25D366] text-white rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 touch-none"
-      >
-        <span>Compartir en WhatsApp</span>
-      </button>
+            <div className="flex flex-col gap-3.5 w-full">
+              <button
+                onPointerDown={() => {
+                  const text = `¡Mira mi resultado en ${tests[currentTestKey].title}! Soy: ${resultData.title}.`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`);
+                }}
+                className="w-full py-4.5 bg-[#25D366] text-white rounded-[1.25rem] font-black text-lg shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-2.5 touch-none"
+              >
+                <span>Compartir en WhatsApp</span>
+              </button>
+              <button onPointerDown={goHome} className="w-full py-4.5 bg-gray-100 text-gray-400 rounded-[1.25rem] font-bold text-base active:scale-95 transition-all duration-200 touch-none">
+                Volver al inicio
+              </button>
+            </div>
+          </div>
+        )}
 
-      <button
-        onPointerDown={goHome}
-        className="w-full py-4 bg-gray-100 text-gray-400 rounded-2xl font-bold text-base active:scale-95 transition-transform touch-none"
-      >
-        Volver al inicio
-      </button>
-    </div>
-  </div>
-)}
+      </div> {/* 기존 컨테이너 닫는 div */}
 
-      </div>
-      <footer className="w-full text-center mt-12 text-[9px] text-gray-300 font-bold tracking-[0.4em] uppercase">© 2026 SIMRI LAB</footer>
+      {/* 💡 기존 footer를 지우고 아래 내용을 넣으세요 */}
+      <footer className="w-full text-center mt-14 pb-12 space-y-6">
+        <div className="flex justify-center gap-6 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
+          <a href="/about" className="hover:text-pink-400 transition-colors">About</a>
+          <a href="/privacy" className="hover:text-pink-400 transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-pink-400 transition-colors">Terms</a>
+        </div>
+        
+        <p className="text-[9px] text-gray-300 font-bold tracking-[0.4em] uppercase">
+          © 2026 SIMRI LAB
+        </p>
+      </footer>
+
     </main>
   );
 }

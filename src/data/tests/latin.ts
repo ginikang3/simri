@@ -1,14 +1,19 @@
 export interface TestData {
   title: string;
+  useImage: boolean; // 💡 "사진 사용 여부" 항목 추가!
   theme: {
     id: string;
     logoText: string;
     primaryColor: string;
     primaryTextColor: string;
-    shadowColor: string;
+    shadowColor?: string;
+  };
+  resultThresholds: {
+    high: number;
+    mid: number;
   };
   questions: {
-    id: number;
+    id?: number;
     text: string;
     options: { text: string; score: number }[];
   }[];
@@ -22,6 +27,7 @@ export interface TestData {
 
 export const latin: TestData = {
   title: "Prueba de Compatibilidad: Novio Coreano 🇰🇷",
+  useImage: true, // 💡 여기에 추가! (연애 테스트는 사진을 쓰니까 true)
   theme: {
     id: "latin-theme",
     logoText: "AMOR KOREA",
@@ -29,6 +35,7 @@ export const latin: TestData = {
     primaryTextColor: "text-white",
     shadowColor: "shadow-[0_4px_0_0_#FF69B4]",
   },
+  resultThresholds: { high: 8, mid: 4 },
   questions: [
     {
       id: 1,
@@ -48,7 +55,7 @@ export const latin: TestData = {
     },
     {
       id: 3,
-      text: "Abrazaste a un amigo en la fiesta y tu novio se pone frío y deja de hablar (se puso celoso).",
+      text: "Abrazaste a un amigo en la fiesta y tu novio se pone frío y deja de hablar por celos.",
       options: [
         { text: "¡Su humor es lo primero! Le pregunto qué pasa y lo consiento.", score: 1 },
         { text: "¿Por qué se pone así? Sigo disfrutando mi fiesta y lo dejo solo.", score: 0 },
@@ -79,7 +86,7 @@ export const latin: TestData = {
       ],
     },
     {
-      id: 7,
+      id: 1,
       text: "Llevan poco tiempo pero lo invitas a conocer a tu familia. Él dice que 'aún es mucha presión'.",
       options: [
         { text: "Entiendo que es porque se toma nuestra relación en serio.", score: 1 },

@@ -1,33 +1,46 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 :root {
   --vh: 1vh;
 }
 
 html, body {
-  /* 기본 배경은 완전 흰색 */
   background-color: #ffffff; 
   color: #333;
   margin: 0;
   padding: 0;
   overflow-x: hidden; 
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.4s ease; /* 배경 전환 효과 */
+  transition: background-color 0.4s ease;
+  
+  /* 💡 v4에서 발생할 수 있는 우측 쏠림 방지 및 중앙 정렬 보정 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mobile-min-h {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 💡 저장된 지침에 따른 VH 보정 */
   min-height: 100vh;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
 /* --- 테마별 배경색 --- */
 
-/* 라틴/한국남친 테스트 진입 시 핑크 배경 */
 body:has(.latin-theme) {
-  background-color: #FFF0F5; /* LavenderBlush: 아주 연한 핑크 */
+  background-color: #FFF0F5; 
 }
 
-/* 능지 테스트 등 다른 테마 배경 (선택사항) */
 body:has(.iq-theme) {
   background-color: #F8FAFC; 
+}
+
+/* 💡 애니메이션이 더 부드럽게 보이도록 기본 트랜지션 추가 (선택사항) */
+.animate-in {
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
