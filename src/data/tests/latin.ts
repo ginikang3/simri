@@ -1,6 +1,7 @@
 export interface TestData {
   title: string;
-  useImage: boolean; // 💡 "사진 사용 여부" 항목 추가!
+  description: string; // 💡 테스트 취지 설명 필드 추가
+  useImage: boolean;
   theme: {
     id: string;
     logoText: string;
@@ -27,7 +28,8 @@ export interface TestData {
 
 export const latin: TestData = {
   title: "Prueba de Compatibilidad: Novio Coreano 🇰🇷",
-  useImage: true, // 💡 여기에 추가! (연애 테스트는 사진을 쓰니까 true)
+  description: "¿Podrías salir con un coreano siguiendo su cultura de citas? Descúbrelo aquí.", // 💡 짧은 설명 추가
+  useImage: true,
   theme: {
     id: "latin-theme",
     logoText: "AMOR KOREA",

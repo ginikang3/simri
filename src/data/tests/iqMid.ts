@@ -2,6 +2,8 @@ import { TestData } from "./latin";
 
 export const iqMid: TestData = {
   title: "Test de IQ: Nivel Medio 🟡",
+  // ✅ 요구사항: 테스트 취지 설명 추가
+  description: "Desafía tu cultura general y lógica con preguntas de nivel intermedio.",
   useImage: false,
   theme: {
     id: "iq-mid-theme",
@@ -23,8 +25,8 @@ export const iqMid: TestData = {
     { text: "¿Quién inventó el teléfono?", options: [{ text: "Thomas Edison", score: 0 }, { text: "Alexander Graham Bell", score: 1 }, { text: "Tesla", score: 0 }, { text: "James Watt", score: 0 }] },
   ],
   results: [
-    { min: 9, max: 10, title: "Primate Evolucionado 🐒", description: "¡Increíble! Tu capacidad de análisis es muy superior al promedio." },
-    { min: 6, max: 8, title: "Delfín Inteligente 🐬", description: "Eres muy rápido y astuto. Tienes una gran agudeza mental." },
     { min: 0, max: 5, title: "Perrito Curioso 🐶", description: "¡Buen esfuerzo! Pero aún hay mucho por descubrir." },
-  ],
+    { min: 6, max: 8, title: "Delfín Inteligente 🐬", description: "Eres muy rápido y astuto. Tienes una gran agudeza mental." },
+    { min: 9, max: 10, title: "Primate Evolucionado 🐒", description: "¡Increíble! Tu capacidad de análisis es muy superior al promedio." },
+],
 };

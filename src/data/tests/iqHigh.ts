@@ -2,6 +2,8 @@ import { TestData } from "./latin";
 
 export const iqHigh: TestData = {
   title: "Test de IQ: Nivel Experto 🔴",
+  // ✅ 요구사항: 테스트 취지 설명 추가
+  description: "Solo para mentes brillantes. Demuestra tu dominio en este desafío de nivel experto.",
   useImage: false,
   theme: {
     id: "iq-high-theme",
@@ -23,8 +25,8 @@ export const iqHigh: TestData = {
     { text: "¿Qué matemático inventó los logaritmos?", options: [{ text: "Euler", score: 0 }, { text: "John Napier", score: 1 }, { text: "Newton", score: 0 }, { text: "Descartes", score: 0 }] },
   ],
   results: [
-    { min: 9, max: 10, title: "Einstein Reencarnado 🧠", description: "¡Nivel Dios! Tu intelecto está fuera de este mundo." },
-    { min: 6, max: 8, title: "Genio del 1% 💎", description: "Tienes una mente brillante y un conocimiento enciclopédico." },
     { min: 0, max: 5, title: "Ciudadano Promedio 👤", description: "Tienes buena inteligencia, pero este nivel era realmente difícil." },
+    { min: 6, max: 8, title: "Genio del 1% 💎", description: "Tienes una mente brillante y un conocimiento enciclopédico." },
+    { min: 9, max: 10, title: "Einstein Reencarnado 🧠", description: "¡Nivel Dios! Tu intelecto está fuera de este mundo." },
   ],
 };

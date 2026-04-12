@@ -2,6 +2,8 @@ import { TestData } from "./latin";
 
 export const iqLow: TestData = {
   title: "Test de IQ: Nivel Básico 🟢",
+  // ✅ 요구사항: 테스트 취지 설명 추가 (짧고 간결하게)
+  description: "Pon a prueba tus conocimientos generales con este examen de inteligencia básica.",
   useImage: false,
   theme: {
     id: "iq-low-theme",
@@ -23,8 +25,8 @@ export const iqLow: TestData = {
     { text: "¿A qué temperatura el hielo se convierte en agua?", options: [{ text: "-10°C", score: 0 }, { text: "0°C", score: 1 }, { text: "50°C", score: 0 }, { text: "100°C", score: 0 }] },
   ],
   results: [
-    { min: 9, max: 10, title: "Oruga Inteligente 🐛", description: "¡Tienes una base sólida! Estás listo para el siguiente nivel." },
-    { min: 6, max: 8, title: "Papa con Potencial 🥔", description: "No está mal, pero necesitas repasar algunos conceptos básicos." },
     { min: 0, max: 5, title: "Piedra de Río 🪨", description: "Parece que estabas distraído. ¡Inténtalo de nuevo!" },
-  ],
+    { min: 6, max: 8, title: "Papa con Potencial 🥔", description: "No está mal, pero necesitas repasar algunos conceptos básicos." },
+    { min: 9, max: 10, title: "Oruga Inteligente 🐛", description: "¡Tienes una base sólida! Estás listo para el siguiente nivel." },
+],
 };
