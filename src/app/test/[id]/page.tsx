@@ -160,6 +160,7 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
             </div>
 
             <div className="flex flex-col gap-3.5 w-full">
+              {/* 왓츠앱 공유 */}
               <button
                 onPointerDown={() => {
                   const text = `¡Mira mi resultado en ${testData.title}! Soy: ${(resultData as any).title}. Haz el test aquí:`;
@@ -169,6 +170,18 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
               >
                 <span>Compartir en WhatsApp</span>
               </button>
+
+              {/* ✅ 페이스북 공유 버튼 추가 */}
+              <button
+                onPointerDown={() => {
+                  const shareUrl = encodeURIComponent(window.location.href);
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, "_blank", "width=600,height=400");
+                }}
+                className="w-full py-4.5 bg-[#1877F2] text-white rounded-[1.25rem] font-black text-lg shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-2.5 touch-none"
+              >
+                <span>Compartir en Facebook</span>
+              </button>
+
               <button onPointerDown={() => window.location.href = "/"} className="w-full py-4.5 bg-gray-100 text-gray-400 rounded-[1.25rem] font-bold mt-2 active:scale-95 transition-all touch-none">
                 Volver al inicio
               </button>
