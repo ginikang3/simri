@@ -1,25 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMobileHeight } from "@/hooks/useMobileHeight";
-import { tests } from "@/data/tests"; 
-
-// ✅ 사장님, 클라이언트 컴포넌트에서는 Metadata export가 불가능하므로 
-// 실제 SEO 적용을 위해서는 이 파일이 아닌 layout.tsx 혹은 별도의 서버 컴포넌트(page.tsx)에서 
-// metadata를 정의해야 합니다. 우선 이 파일 내에서 로봇이 읽을 수 있는 최적화 작업을 진행했습니다.
+import { supabase } from "@/lib/supabase";
 
 export default function DynamicSimriPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const currentTestKey = id as keyof typeof tests;
   
   useMobileHeight();
 
+  const [testData, setTestData] = useState<any>(null);
   const [step, setStep] = useState<"intro" | "quiz" | "result">("intro");
   const [currentIdx, setCurrentIdx] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const testData = tests[currentTestKey] as any;
+  useEffect(() => {
+    const fetchTestData = async () => {
+      try {
+        const { data } = await supabase
+          .from('tests')
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (data) setTestData(data);
+      } catch (err) {
+        console.error("Error fetching test data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTestData();
+  }, [id]);
 
+  if (loading) return <div className="p-10 text-center text-gray-400 font-bold">Cargando...</div>;
   if (!testData) return <div className="p-10 text-center">Test no encontrado.</div>;
 
   const handleAnswer = (score: number) => {
@@ -37,47 +51,30 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
     ? testData.results.find((r: any) => totalScore >= r.min && totalScore <= r.max) || testData.results[0]
     : null;
 
-  // ✅ SEO: 구글 로봇용 구조화 데이터 생성
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Quiz",
-    "name": testData.title,
-    "description": testData.description,
-    "provider": {
-      "@type": "Organization",
-      "name": "Simri Lab"
-    }
-  };
-
   const animationClass = "animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out fill-mode-forwards";
 
   return (
-    <main className={`mobile-min-h flex flex-col items-center justify-start px-6 pt-6 pb-6 transition-all duration-500 ${testData.theme?.id}`}>
-      {/* ✅ SEO: 구조화 데이터 삽입 */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
+    <main className="mobile-min-h flex flex-col items-center justify-start px-6 pt-6 pb-6 bg-white transition-all duration-500">
       <div className="w-full max-w-sm flex flex-col items-center">
         
         <header className="w-full flex justify-center mb-8 pt-4">
-          <button onPointerDown={() => window.location.href = "/"} className="active:scale-90 transition-transform duration-150 touch-none">
-            <img src="/images/logo.png" alt="Simri Lab Logo" className="h-12 w-auto object-contain" />
+          <button onPointerDown={() => window.location.href = "/"} className="active:scale-95 transition-transform duration-150 touch-none">
+            <img src="/images/logo.png" alt="Simri Lab" className="h-10 w-auto object-contain" />
           </button>
         </header>
 
         {/* 1. 인트로 섹션 */}
         {step === "intro" && (
           <div key="intro" className={`w-full flex flex-col items-center ${animationClass}`}>
-            <div className="w-full aspect-video bg-gray-100 rounded-[2rem] mb-6 overflow-hidden shadow-lg border border-black/5">
-              <img 
-                src={`/images/${currentTestKey}/intro.webp`} 
-                alt={testData.title} // ✅ SEO: Alt 태그 수정
-                className="w-full h-full object-cover" 
-                onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/800x450?text=Cargando..."; }}
-              />
-            </div>
+            {testData.thumbnail_url && (
+              <div className="w-full aspect-video bg-gray-100 rounded-[2rem] mb-6 overflow-hidden shadow-sm border border-black/5">
+                <img 
+                  src={testData.thumbnail_url} 
+                  alt="Intro"
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+            )}
             
             <h1 className="text-2xl font-black text-gray-900 mb-2 text-center leading-tight px-2 break-keep">
               {testData.title}
@@ -93,15 +90,6 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
             >
               ¡Empezar ahora!
             </button>
-
-            <section className="w-full opacity-10 mt-10">
-              <div className="text-[10px] text-gray-400 leading-relaxed text-center break-keep px-4 pb-10">
-                {/* ✅ SEO: 검색 로봇을 위한 스페인어 키워드 강화 */}
-                Bienvenido a nuestro test de personalidad exclusivo. Descubre tu compatibilidad y rasgos únicos con Simri Lab. 
-                Test de personalidad coreano, cultura coreana, y relaciones amorosas en español.
-                {testData.description}
-              </div>
-            </section>
           </div>
         )}
 
@@ -110,7 +98,7 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
           <div key={`quiz-${currentIdx}`} className={`w-full flex flex-col items-center ${animationClass}`}>
             <div className="w-full bg-black/5 h-1.5 rounded-full mb-6 overflow-hidden">
               <div 
-                className={`${testData.theme?.primaryColor} h-full transition-all duration-500 ease-in-out`} 
+                className="bg-[#FF69B4] h-full transition-all duration-500 ease-in-out" 
                 style={{ width: `${((currentIdx + 1) / testData.questions.length) * 100}%` }} 
               />
             </div>
@@ -119,11 +107,12 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
               {testData.questions[currentIdx].text}
             </h2>
 
-            {testData.useImage && (
+            {/* ✅ 수정 포인트: 이미지 로딩 에러 시 display:none 시키는 로직 제거 (캐시 꼬임 방지) */}
+            {testData.questions[currentIdx].image_url && testData.questions[currentIdx].image_url.trim() !== "" && (
               <div className="w-full aspect-video bg-gray-100 rounded-2xl mb-7 overflow-hidden border border-black/5 shadow-inner">
                 <img 
-                  src={`/images/${currentTestKey}/${currentIdx + 1}.webp`} 
-                  alt={`Pregunta ${currentIdx + 1}`} // ✅ SEO: Alt 태그 수정
+                  src={testData.questions[currentIdx].image_url} 
+                  alt="Question"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -146,24 +135,26 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
         {/* 3. 결과 섹션 */}
         {step === "result" && resultData && (
           <div key="result" className={`w-full text-center flex flex-col items-center pt-2 ${animationClass}`}>
-            <h2 className="text-3xl font-black text-[#FF69B4] mb-9 leading-tight break-keep px-4">{(resultData as any).title}</h2>
-            <div className="w-52 h-52 bg-white rounded-[3rem] shadow-2xl mb-7 overflow-hidden border-8 border-white mx-auto">
-              <img 
-                src={`/images/${currentTestKey}/results/${testData.results.indexOf(resultData)}.webp`}
-                alt="Resultado de personalidad" // ✅ SEO: Alt 태그 수정
-                className="w-full h-full object-contain"
-                onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
-              />
-            </div>
+            <h2 className="text-3xl font-black text-[#FF69B4] mb-9 leading-tight break-keep px-4">{resultData.title}</h2>
+            
+            {resultData.image_url && (
+              <div className="w-52 h-52 bg-white rounded-[3rem] shadow-2xl mb-7 overflow-hidden border-8 border-white mx-auto">
+                <img 
+                  src={resultData.image_url}
+                  alt="Result"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+
             <div className="bg-white p-7 rounded-[2rem] shadow-xl border border-white mb-7 w-full font-semibold text-gray-600 leading-relaxed break-keep">
-              {(resultData as any).description}
+              {resultData.description}
             </div>
 
             <div className="flex flex-col gap-3.5 w-full">
-              {/* 왓츠앱 공유 */}
               <button
                 onPointerDown={() => {
-                  const text = `¡Mira mi resultado en ${testData.title}! Soy: ${(resultData as any).title}. Haz el test aquí:`;
+                  const text = `¡Mira mi resultado en ${testData.title}! Soy: ${resultData.title}. Haz el test aquí:`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + window.location.href)}`);
                 }}
                 className="w-full py-4.5 bg-[#25D366] text-white rounded-[1.25rem] font-black text-lg shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-2.5 touch-none"
@@ -171,7 +162,6 @@ export default function DynamicSimriPage({ params }: { params: { id: string } })
                 <span>Compartir en WhatsApp</span>
               </button>
 
-              {/* ✅ 페이스북 공유 버튼 추가 */}
               <button
                 onPointerDown={() => {
                   const shareUrl = encodeURIComponent(window.location.href);
